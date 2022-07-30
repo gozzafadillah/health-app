@@ -12,7 +12,7 @@ type BusinessHealth struct {
 }
 
 // AddDataHealth implements domain_health.Business
-func (bh BusinessHealth) AddDataHealth(userID string,domain domain_health.Health) error {
+func (bh BusinessHealth) AddDataHealth(userID string, domain domain_health.Health) error {
 	domain.UserID = userID
 	err := bh.Repo.Store(domain)
 	if err != nil {
@@ -23,17 +23,26 @@ func (bh BusinessHealth) AddDataHealth(userID string,domain domain_health.Health
 
 // CalculateIdealWeight implements domain_health.Business
 func (bh BusinessHealth) CalculateIdealWeight(userID string) (interface{}, error) {
+	user, err := bh.UserBusiness.GetUserByUserID(userID)
+	if err != nil {
+		return 0, errors.New("user not found")
+	}
 	weight, err := bh.Repo.GetDataUser(userID)
 	if err != nil {
 		return 0, errors.New("failed calculate data")
 	}
-	idealWeight := (float32(weight.Weight) - 100) - ((float32(weight.Weight) -100) * 10/100)
-	user, err := bh.UserBusiness.GetUserByUserID(userID)
+	var idealWeight float32
+	if user.Gender == "female" {
+		idealWeight = (float32(weight.Weight) - 100) - ((float32(weight.Weight) - 100) * 15 / 100)
+	} else {
+		idealWeight = (float32(weight.Weight) - 100) - ((float32(weight.Weight) - 100) * 10 / 100)
+	}
 
 	data := map[string]interface{}{
-		"userid": user.UserID,
-		"name": user.Name,
-		"age": user.Age,
+		"userid":       user.UserID,
+		"name":         user.Name,
+		"gender":       user.Gender,
+		"age":          user.Age,
 		"weight_ideal": idealWeight,
 	}
 	return data, err
