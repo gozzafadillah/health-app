@@ -10,6 +10,13 @@ type UsersRepo struct {
 	DB *gorm.DB
 }
 
+// GetUserByUserID implements domain_users.Repository
+func (ur UsersRepo) GetUserByUserID(userID string) (domain_users.Users, error) {
+	rec := Users{}
+	err := ur.DB.Where("user_id = ?", userID).First(&rec).Error
+	return ToDomain(rec), err
+}
+
 // GetUserByEmail implements domain_users.Repository
 func (ur UsersRepo) GetUserByEmail(email string) (domain_users.Users, error) {
 	rec := Users{}
