@@ -1,6 +1,7 @@
 package routes
 
 import (
+	handler_health "health-app/controllers/health"
 	handler_users "health-app/controllers/users"
 	"net/http"
 
@@ -11,6 +12,7 @@ import (
 type ControllerList struct {
 	JWTMiddleware      middleware.JWTConfig
 	UserHandler		   handler_users.UsersHandler
+	HealthHandler handler_health.HandlerHealth
 }
 
 // const server = "https://36e2-2001-448a-1102-1a0f-350a-677f-f95c-668a.ap.ngrok.io/"
@@ -30,4 +32,9 @@ func (cl *ControllerList) RouteRegister(e *echo.Echo) {
 	}))
 	e.POST("/login", cl.UserHandler.Login)
 	e.POST("/register", cl.UserHandler.Register)
+
+	AuthUser := e.Group("users")
+	AuthUser.Use(middleware.JWTWithConfig(cl.JWTMiddleware))
+	AuthUser.POST("/health", cl.HealthHandler.AddDataHealth)
+	AuthUser.GET("/health", cl.HealthHandler.CalculateIdealWeight)
 }
