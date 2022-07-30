@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  health-mysql-server:
+    image: mariadb:10.7
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_DATABASE=db_health
+    ports:
+      - "33006:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysql", "-u", "root", "-proot", "-e", "show schemas"]
+      interval: 10s
+
+  health-app:
+    build: .
+    restart: always
+    depends_on:
+      health-mysql-server:
+        condition: service_healthy
+    environment:
+      DBNAME: db_health
+      DBUSER: root
+      DBPASS: root
+      DBHOST: health-mysql-server
+      DBPORT: 3306
+      JWTSecret: health
+    container_name: health-1.0
+    ports:
+      - "19000:8080"
+    env_file:
+      - "./config.env"
