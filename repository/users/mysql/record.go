@@ -8,18 +8,20 @@ import (
 
 type Users struct {
 	*gorm.Model
-	UserID string
-	Name string
-	Email string
+	UserID   string
+	Name     string
+	Gender   string
+	Email    string
 	Password string
-	Age int
+	Age      int
 }
 
-func ToDomain(rec Users) domain_users.Users{
+func ToDomain(rec Users) domain_users.Users {
 	return domain_users.Users{
 		UserID:   rec.UserID,
 		Name:     rec.Name,
 		Age:      rec.Age,
+		Gender:   rec.Gender,
 		Email:    rec.Email,
 		Password: rec.Password,
 	}
