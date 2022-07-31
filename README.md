@@ -7,7 +7,7 @@ MVP :
 
 ## Requirement Installation
 
-1. Docker Linux/Mac/Window (Docker Desktop need WSL2 for running)
+1. Docker Linux/Mac/Window (Docker Desktop for windows need WSL2 for running)
 2. VSCode
 3. Postman for Testing
 4. Install docker-compose
