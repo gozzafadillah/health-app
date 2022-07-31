@@ -9,6 +9,7 @@ type Health struct {
 type Business interface {
 	AddDataHealth(userID string, domain Health) error
 	CalculateIdealWeight(userID string) (interface{}, error)
+	BMICalculate(userID string) (float32, error)
 }
 
 type Repository interface {
