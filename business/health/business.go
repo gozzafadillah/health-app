@@ -2,6 +2,7 @@ package business_health
 
 import (
 	"errors"
+	"fmt"
 	domain_health "health-app/domain/health"
 	domain_users "health-app/domain/users"
 )
@@ -9,6 +10,20 @@ import (
 type BusinessHealth struct {
 	Repo         domain_health.Repository
 	UserBusiness domain_users.Business
+}
+
+// BMICalculate implements domain_health.Business
+func (bh BusinessHealth) BMICalculate(userID string) (float32, error) {
+	user, err := bh.Repo.GetDataUser(userID)
+	if err != nil {
+		return 0, errors.New("user not found")
+	}
+	fmt.Println("user :", user)
+	height := ((float32(user.Height) / 100) * (float32(user.Height) / 100))
+	fmt.Println("height :", height)
+	BMI := float32(user.Weight) / height
+	fmt.Println("BMI :", BMI)
+	return BMI, nil
 }
 
 // AddDataHealth implements domain_health.Business
@@ -37,6 +52,10 @@ func (bh BusinessHealth) CalculateIdealWeight(userID string) (interface{}, error
 	} else {
 		idealWeight = (float32(weight.Weight) - 100) - ((float32(weight.Weight) - 100) * 10 / 100)
 	}
+	BMI, err := bh.BMICalculate(userID)
+	if err != nil {
+		return 0, errors.New("bmi can't calculate")
+	}
 
 	data := map[string]interface{}{
 		"userid":       user.UserID,
@@ -44,6 +63,7 @@ func (bh BusinessHealth) CalculateIdealWeight(userID string) (interface{}, error
 		"gender":       user.Gender,
 		"age":          user.Age,
 		"weight_ideal": idealWeight,
+		"bmi":          BMI,
 	}
 	return data, err
 }

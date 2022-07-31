@@ -10,7 +10,7 @@ type JSONHealth struct {
 
 func ToDomain(healthReq JSONHealth) domain_health.Health {
 	return domain_health.Health{
-		Weight: healthReq.Height,
+		Weight: healthReq.Weight,
 		Height: healthReq.Height,
 		UserID: "",
 	}
